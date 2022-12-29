@@ -1,6 +1,21 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "../styles/globals.scss";
+import type { AppProps } from "next/app";
+import { AppWrapper } from "../context/state";
+import Script from "next/script";
+import Navbar from "../components/layout/navbar";
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <AppWrapper>
+      <Script
+        type="text/javascript"
+        src="/js/bootstrap.bundle.min.js"
+        strategy="beforeInteractive"
+      />
+      <Navbar />
+      <div className="container">
+        <Component {...pageProps} />
+      </div>
+    </AppWrapper>
+  );
 }

@@ -45,7 +45,7 @@ export default function Assignment(props) {
     <div className="my-5">
       <h1>{props.assignment.title}</h1>
       <div className="mt-5 col-10 mx-auto">
-        {props.assignment.description.split("\\n").map((paragraph) => (
+        {props.assignment.body.split("\\n").map((paragraph) => (
           <p className="fs-5 problemP">{paragraph}</p>
         ))}
       </div>

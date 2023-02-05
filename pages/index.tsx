@@ -1,52 +1,42 @@
-import axios from "axios";
-import { useRef } from "react";
-import { useAppContext } from "../context/state";
+import axios from 'axios';
+import { MutableRefObject, useRef } from 'react';
+import { toast } from 'react-toastify';
+import { useAppContext } from '../context/state';
 
 export default function Index() {
-  const { unit, setUnit, addToast } = useAppContext();
+  const { unit, setUnit } = useAppContext();
 
-  const idRef = useRef<HTMLInputElement>(null);
+  const idRef = useRef() as MutableRefObject<HTMLInputElement>;
 
   function signIn(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const id = idRef.current!.value;
+    const id = idRef.current.value;
 
     axios
-      .get("/api/signIn", { params: { id } })
+      .get('https://ralmeida.dev/capstone_server/questions/?format=api')
       .then((response) => {
         const data = response.data;
-        addToast({
-          status: data.status,
-          title: data.title,
-          body: data.message,
-        });
-
-        if (data.found) {
+        console.log({ response });
+        if (data.data) {
           setUnit(id);
+        } else {
+          toast.warning(data.message);
         }
       })
       .catch((error) => {
-        addToast({
-          status: 500,
-          title: error.code,
-          body: error.message,
-        });
+        toast.error(`signIn Error (${error.code}): ${error.message}`);
       });
   }
 
   function signOut() {
-    setUnit(null);
-    addToast({
-      status: 200,
-      title: "Signed Out",
-      body: "None of your personal data was recorded",
-    });
+    setUnit('');
+    toast.success(`Signed out: none of your personal information was recorded`);
   }
 
   if (unit) {
     return (
-      <div className="d-flex " style={{ height: "94vh" }}>
+      <div className="d-flex " style={{ height: '94vh' }}>
         <div className="mx-auto my-auto card">
           <div className="card-body">
             <h5 className="card-title">Signed in as unit {unit}</h5>
@@ -63,7 +53,7 @@ export default function Index() {
   }
 
   return (
-    <div className="d-flex" style={{ height: "94vh" }}>
+    <div className="d-flex" style={{ height: '94vh' }}>
       <form className="mx-auto my-auto" onSubmit={signIn}>
         <div className="input-group">
           <span className="input-group-text" id="idInputLabel">

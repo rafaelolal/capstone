@@ -6,10 +6,12 @@ import FlagIcon from "../../components/icons/flag";
 import HourglassIcon from "../../components/icons/hourglass";
 import Link from "next/link";
 import ArrowIcon from "../../components/icons/arrow";
+import { toast } from "react-toastify";
+import Begin from "../../components/cards/begin";
 
 export default function Assignments() {
   const now = new Date();
-  const { unit, addToast } = useAppContext();
+  const { unit } = useAppContext();
   const router = useRouter();
 
   const { data, error } = useSWR("/api/getAssignments", async (url) => {
@@ -19,11 +21,7 @@ export default function Assignments() {
         return response.data;
       })
       .catch((error) => {
-        addToast({
-          status: 500,
-          title: error.code,
-          body: error.message,
-        });
+        toast.error(`getAssignments Error (${error.code}): ${error.message}`);
       });
   });
 
@@ -39,30 +37,25 @@ export default function Assignments() {
   console.log(data.data);
 
   return (
-    <div className="row g-5 my-5">
+    <div className="row my-5">
       {data.data.map((assignment, i) => (
         <div key={i} className="col-6">
-          <div className="post p-3">
-            <div className="d-flex justify-content-between">
-              <div
-                className={`p-1 fw-bold text-center ms-auto d-inline-block ${
-                  new Date(assignment.openDate) < now ? "begin" : "noBegin"
-                }`}
-              >
-                <Link href={`/assignments/${assignment.id}`}>
-                  <a style={{ textDecoration: "none" }}>
-                    {new Date(assignment.openDate) < now
-                      ? "BEGIN"
-                      : "UNAVAILABLE"}
-                  </a>
-                </Link>
-              </div>
-            </div>
+          <div className="post p-3" style={{ outline: "1px black solid" }}>
             <h2 className="fw-bold">{assignment.title}</h2>
 
-            <p className="text-center">{assignment.description.split("\\n").join(" ").split(". ").slice(0, 2).join(". ")}...</p>
+            <p className="text-center">
+              {assignment.body
+                .split("\\n")
+                .join(" ")
+                .split(". ")
+                .slice(0, 2)
+                .join(". ")}
+              ...
+            </p>
 
-            <div className="date mt-5">
+            <Begin assignment={assignment} />
+
+            <div className="date mt-3">
               <div className="row m-0">
                 <div className="col-auto icon d-flex">
                   <div className="mx-auto my-auto d-flex p-1">
@@ -76,6 +69,7 @@ export default function Assignments() {
                     </div>
                   </div>
                 </div>
+
                 <div className="col">
                   <p
                     className="text-center fw-bold mb-0"

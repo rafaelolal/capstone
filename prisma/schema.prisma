@@ -11,27 +11,27 @@ datasource db {
 }
 
 model Assignment {
-  id          Int                     @id @default(autoincrement())
-  title       String
-  description String
-  openDate    DateTime
-  dueDate     DateTime
-  responses   AssignmentsOnStudents[]
+  id        Int                  @id @default(autoincrement())
+  title     String
+  body      String               @default("")
+  openDate  DateTime
+  dueDate   DateTime
+  responses UnitsOnAssignments[]
 }
 
 model Unit {
-  id          Int                     @id
-  assignments AssignmentsOnStudents[]
+  id          Int                  @id
+  assignments UnitsOnAssignments[]
 }
 
-model AssignmentsOnStudents {
-  unit         Unit       @relation(fields: [unitId], references: [id])
-  unitId       Int
+model UnitsOnAssignments {
   assignment   Assignment @relation(fields: [assignmentId], references: [id])
   assignmentId Int
 
-  completed Boolean
-  response  String
+  unit   Unit @relation(fields: [unitId], references: [id])
+  unitId Int
+
+  response String
 
   @@id([unitId, assignmentId])
 }
